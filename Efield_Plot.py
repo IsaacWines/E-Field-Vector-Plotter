@@ -24,36 +24,6 @@ def csv_import(path: str, size: tuple) -> pd.DataFrame:
     return df.iloc[: size[0], : size[1]]
 
 
-def Ey_Calc(current_config: pd.DataFrame, size: tuple, step_size: float) -> tuple:
-    """
-    Function to return the calculated Ey Field from a config's csv file.
-
-    Inputs:
-        current_config <-- pandas DataFrame type of the config csv
-        size <-- tuple (number of rows , number of columns)
-        step_size <-- float distance between readings
-    Outputs:
-        Ey --> pandas DataFrame type of the Ey Field at each point from the config csv
-    """
-
-    Ey = {}
-    Ey_Formula = {}
-
-    for row in current_config.itertuples():
-        # Initialize list for each row
-        Ey[row[0]] = []
-        Ey_Formula[row[0]] = []
-
-        for v_reading in range(1, len(row[1:])):
-            Ey_point = -1 * ((row[v_reading + 1] - row[v_reading]) / step_size)
-            Ey[row[0]].append(Ey_point)
-            Ey_Formula[row[0]].append(f"{row[v_reading + 1]} - {row[v_reading]}")
-
-    return pd.DataFrame.from_dict(Ey).T.iloc[
-        : size[0], : size[1]
-    ], pd.DataFrame.from_dict(Ey_Formula).T.iloc[: size[0], : size[1]]
-
-
 def Ex_Calc(current_config: pd.DataFrame, size: tuple, step_size: float) -> tuple:
     """
     Function to return the calculated Ex Field from a config's csv file.
@@ -69,27 +39,57 @@ def Ex_Calc(current_config: pd.DataFrame, size: tuple, step_size: float) -> tupl
     Ex = {}
     Ex_Formula = {}
 
+    for row in current_config.itertuples():
+        # Initialize list for each row
+        Ex[row[0]] = []
+        Ex_Formula[row[0]] = []
+
+        for v_reading in range(1, len(row[1:])):
+            Ex_point = -1 * ((row[v_reading + 1] - row[v_reading]) / step_size)
+            Ex[row[0]].append(Ex_point)
+            Ex_Formula[row[0]].append(f"{row[v_reading + 1]} - {row[v_reading]}")
+
+    return pd.DataFrame.from_dict(Ex).T.iloc[
+        : size[0], : size[1]
+    ], pd.DataFrame.from_dict(Ex_Formula).T.iloc[: size[0], : size[1]]
+
+
+def Ey_Calc(current_config: pd.DataFrame, size: tuple, step_size: float) -> tuple:
+    """
+    Function to return the calculated Ey Field from a config's csv file.
+
+    Inputs:
+        current_config <-- pandas DataFrame type of the config csv
+        size <-- tuple (number of rows , number of columns)
+        step_size <-- float distance between readings
+    Outputs:
+        Ey --> pandas DataFrame type of the Ey Field at each point from the config csv
+    """
+
+    Ey = {}
+    Ey_Formula = {}
+
     for col in current_config.items():
         # Initialize list for each row
-        Ex[col[0]] = []
-        Ex_Formula[col[0]] = []
+        Ey[col[0]] = []
+        Ey_Formula[col[0]] = []
 
         for v_reading in range(len(col[1])):
             try:
-                Ex_point = -1 * (
+                Ey_point = -1 * (
                     (col[1][v_reading + 1] - col[1][v_reading]) / step_size
                 )
 
-                Ex[col[0]].append(Ex_point)
-                Ex_Formula[col[0]].append(
+                Ey[col[0]].append(Ey_point)
+                Ey_Formula[col[0]].append(
                     f"{col[1][v_reading + 1]} - {col[1][v_reading]}"
                 )
             except:
                 pass
 
-    return pd.DataFrame.from_dict(Ex).iloc[
+    return pd.DataFrame.from_dict(Ey).iloc[
         : size[0], : size[1]
-    ], pd.DataFrame.from_dict(Ex_Formula).iloc[: size[0], : size[1]]
+    ], pd.DataFrame.from_dict(Ey_Formula).iloc[: size[0], : size[1]]
 
 
 def plot_data(x_data, y_data, magnitudes, filename):
@@ -119,7 +119,6 @@ def plot_data(x_data, y_data, magnitudes, filename):
     plt.draw()
 
     # Save image
-    # filename = input("Enter a filename to save the plot: ")
     print("Saving plot to {}".format(filename[0]))
     fig.savefig(filename[0] + "_vector_plot.png", dpi=300)
 
@@ -138,7 +137,7 @@ def main():
         "Ex_Field": "path/to/E_field_x_component.csv", <-- this is a path for the script to output
         "Ey_Field": "path/to/E_field_y_component.csv", <-- this is a path for the script to output
         "folder": "config_a/",                         <-- folder where everything for specific configuration is stored
-        "nicename": "Config A",                        <-- name for the plot title, can be whatever you want
+        "nicename": "Config A - Sharp",                <-- name for the plot title, can be whatever you want
         "dims": (int rows , int columns)               <-- size of the CSV file for this specific config
     }
     """
@@ -149,7 +148,7 @@ def main():
             "Ex_Field": "path/to/E_field_x_component.csv",
             "Ey_Field": "path/to/E_field_y_component.csv",
             "folder": "config_a/",
-            "nicename": "Config A",
+            "nicename": "Config Example",
             "dims": (0, 0),
         }
     ]
@@ -174,13 +173,13 @@ def main():
         current_csv = csv_import(current_config["path"], size)
 
         Ecalc_size = (size[0] - 1, size[1] - 1)
-        Ey, Ey_Formula = Ey_Calc(current_csv, Ecalc_size, step_size)
-        # print("Ey\n", Ey)
-        # print("Ey_Formula\n", Ey_Formula)
-
         Ex, Ex_Formula = Ex_Calc(current_csv, Ecalc_size, step_size)
         # print("Ex\n", Ex)
         # print("Ex_Formula\n", Ex_Formula)
+
+        Ey, Ey_Formula = Ey_Calc(current_csv, Ecalc_size, step_size)
+        # print("Ey\n", Ey)
+        # print("Ey_Formula\n", Ey_Formula)
 
         try:
             Ex.to_csv(current_config["Ex_Field"], index=False, encoding="utf-8")
