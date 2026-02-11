@@ -15,6 +15,7 @@
 ## Using the Script
 
 > **Note:** This script assumes that each reading has a uniform distance between each point in the x and in the y direction. It also does not account for field in the z direction.
+
 > **Note:** The script for testing purposes can also output the following `Ex_formula` or `Ey_formula` variables, these are CSV files that instead of numbers in each point, outputs what two numbers are being subtracted to get the value for that specific Ex or Ey component. 
 
 1) Follow the comment in the code for the config setup, create a seperate folder for each different reading config, script will output everything pertaining to that specific config in its specific folder.
