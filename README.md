@@ -21,7 +21,7 @@
 1) Follow the comment in the code for the config setup, create a seperate folder for each different reading config, script will output everything pertaining to that specific config in its specific folder.
 2) Set the `step_size` variable to the distance between readings (or points). Script math based in **mm**.
 3) Set the `size` variable to the dimensions of the voltage reading CSV files. **Note:** This assumes all the reading CSV files are the same dimensions, if bulk calculating multiple different voltage reading CSV files, either set this value to the dimensions of the smallest CSV file or specify in the config each the dimensions of each different CSV file.
-4) If specifying each dimension, uncomment **Line 207** through **Line 210**.
+4) If specifying each dimension, uncomment **Line 167** through **Line 170**.
 5) Run script, all plots and component CSV files will be saved to their respective folders.
 
 ## Proper Folder Setup 
