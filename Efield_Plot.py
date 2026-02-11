@@ -158,7 +158,7 @@ def main():
     size = (20, 28)
 
     # adjust to the distance between readings, assume uniform distance in x and y direction.
-    step_size = 10.00
+    step_size = 0.001
 
     for current_config in configs:
         print(current_config["name"])
